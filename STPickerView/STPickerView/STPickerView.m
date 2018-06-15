@@ -10,6 +10,7 @@
 
 #define STScreenWidth  CGRectGetWidth([UIScreen mainScreen].bounds)
 #define STScreenHeight CGRectGetHeight([UIScreen mainScreen].bounds)
+#define SafeAreaBottomHeight  (STScreenHeight >= 812.0 ? 33 : 0)
 
 @interface STPickerView()
 @property (nonatomic, assign, getter=isIphonePlus)BOOL iphonePlus;
@@ -93,24 +94,20 @@
     [[UIApplication sharedApplication].keyWindow bringSubviewToFront:self];
     
     if (self.contentMode == STPickerContentModeBottom) {
+        
         CGRect frameContent =  self.contentView.frame;
-        if (self.isIphonePlus) {
-            frameContent.origin.y = STScreenHeight - self.contentView.st_height + 16;
-        }else {
-            frameContent.origin.y = STScreenHeight - self.contentView.st_height;
-        }
+        frameContent.origin.y = STScreenHeight - self.contentView.st_height - SafeAreaBottomHeight;
+        
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             [self.layer setOpacity:1.0];
             self.contentView.frame = frameContent;
         } completion:^(BOOL finished) {
         }];
     }else {
+        
         CGRect frameContent =  self.contentView.frame;
-        if (self.isIphonePlus) {
-            frameContent.origin.y = (STScreenHeight - self.contentView.st_height + 16)/2;
-        }else {
-            frameContent.origin.y = (STScreenHeight - self.contentView.st_height)/2;
-        }
+        frameContent.origin.y = (STScreenHeight - self.contentView.st_height)/2;
+        
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             [self.layer setOpacity:1.0];
             self.contentView.frame = frameContent;
@@ -124,7 +121,7 @@
 {
     if (self.contentMode == STPickerContentModeBottom) {
         CGRect frameContent =  self.contentView.frame;
-        frameContent.origin.y += self.contentView.st_height;
+        frameContent.origin.y += (self.contentView.st_height+SafeAreaBottomHeight);
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             [self.layer setOpacity:0.0];
             self.contentView.frame = frameContent;
@@ -297,11 +294,6 @@
         _lineViewDown.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     }
     return _lineViewDown;
-}
-
-- (BOOL)isIphonePlus{
-    return (CGRectGetHeight([UIScreen mainScreen].bounds) >= 736) |
-    (CGRectGetWidth([UIScreen mainScreen].bounds) >= 736);
 }
 
 @end
